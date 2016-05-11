@@ -155,7 +155,7 @@ public class Image{
      * @param int a alpha value 0-255
      */
 
-    public void setColor(int x, int y, int r, int g, int b, int a){ // converts r g b to rgb int
+    public void setColor(int x, int y, int r, int g, int b, int a){ 
 	int value = (( a << 24) & 0xFF000000) | 
 	    ((r << 16) & 0x00FF0000) |
 	    ((g << 8) & 0x0000FF00) | 
@@ -219,7 +219,7 @@ public class Image{
      * @return BufferedImage the images BufferedImage
      */
     
-    public BufferedImage getBufferedImage(){ // if you want to act upon the buffered image directly
+    public BufferedImage getBufferedImage(){ 
 	return image;
     }
 
@@ -240,8 +240,7 @@ public class Image{
 
 	img.getSubimage(10,10,100,100,"subimagetest","png");
 	img.saveImage("save1","png");
-	
-	
+
 	img.closeImage();
 	*/
     }

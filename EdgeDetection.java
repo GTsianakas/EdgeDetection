@@ -12,11 +12,21 @@ import static java.lang.Math.abs;
 
 public class EdgeDetection{
 
-    Image image;
+    private Image image;
+    
+    /**
+     * Returns an Image object of the imgName image file
+     */
 
     public EdgeDetection(String imgName){
 	this.image = new Image(imgName);
     }
+
+    /**
+     * Returns a boolean 2d array representing the edges that were detected 
+     * @param int edgeDetValue the threshold (pixel value diference) between an edge
+     * @return boolean[][] edge array were true indicates edge
+     */
 
     public boolean[][] detectEdges(int edgeDetValue){
 	int[][] data = this.smoothFilter();
@@ -27,8 +37,9 @@ public class EdgeDetection{
 	    for (int y = 0; y < image.getHeight()-1; y++){
 		if (abs(data[x][y] - data[x+1][y]) >= edgeDetValue ||
 		    abs(data[x][y] - data[x][y+1]) >= edgeDetValue ||
+		    abs(data[x][y] - data[x+1][y+1]) >= edgeDetValue ||
 		    abs(data[x][y] - data[x+1][y+1]) >= edgeDetValue){
-		    		    
+		    		    		    
 		    edge[x][y] = true;
 		}
 	    }
@@ -50,10 +61,14 @@ public class EdgeDetection{
 		}
 	    }
 	}
-
+	
 	return edge;
-
     }
+    
+    /**
+     * returns a 2d int array representing the image in grayscale(tweak for better results as necessary
+     * @return int[][] the grayscale values x,y of the image 0-255
+     */
 
     public int[][] getGrayScale(){
 	int[][] value = new int[image.getWidth()][image.getHeight()];
@@ -62,17 +77,27 @@ public class EdgeDetection{
 		//you can tweak this values for better results 
 		//maybe use doubles and exact multiplication. better result but slower.
 		//value[row][col] = (image.getRed(row,col) >> 2) + (image.getGreen(row,col) >> 1) + (image.getBlue(row,col) >> 2);
-		value[row][col] = (int) ( (image.getRed(row,col) * 0.3) + (image.getGreen(row,col) *0.5) + (image.getBlue(row,col) *0.11) /3);
+		value[row][col] = (int) ( ((image.getRed(row,col) * 0.3) + (image.getGreen(row,col) *0.5) + (image.getBlue(row,col) *0.11)) /3);
 	    }
 	}
 	return value;
     }
 
+    /**
+     * Returns the Image object of the image if you want more control over it
+     * @return Image image
+     */
+
     public Image getImage(){
 	return image;
     }
 
-    //works good on images with smooth transitions
+    /**
+     * Returns the 2d image grayScale values representing x,y coords with a simple smoothing algorithm that helps
+     * with images with smooth transitions and removes a some noice.
+     * @return int[][] grayscale values of image with a minor smoothing filter
+     */
+
     public int[][] smoothFilter(){
 	
 	int[][] smooth = this.getGrayScale();
@@ -88,7 +113,13 @@ public class EdgeDetection{
 	
 	return smooth;
     }
-
+    
+    /**
+     * Creates the new image file containing the edge detection result.
+     * @param String filename the new image files name extensio added automatically
+     * @param String type the type of the image includes jpg,png,pmg,jpg
+     * @param edgeThresh the value diference to identify edges
+     */
 
     public void saveImageWithEdge(String filename,String type,int edgeThresh){
 	boolean edge[][] = this.detectEdges(edgeThresh);
@@ -105,6 +136,11 @@ public class EdgeDetection{
 	}
 	image.saveImage(filename,type);
     }
+
+    /**
+     * Prints the Histogram of the image on console can be used to determine if the grayscale is balanced
+     */
+
     public void printHistogram(){
 	
 	//Image img = image.createImage(256,2000,fileName,type);
@@ -125,10 +161,13 @@ public class EdgeDetection{
 
     }
 
+    //testing
     public static void main(String[] args){
-	EdgeDetection img = new EdgeDetection("baby.jpg");
+	/*
+	EdgeDetection img = new EdgeDetection("test.jpg");
 	img.printHistogram();
-	img.saveImageWithEdge("babymooth10","png",10);
+	img.saveImageWithEdge("testsmooth10B","png",10);
+	*/
     }
 
 
