@@ -1,3 +1,13 @@
+/**
+ * EdgeDetection
+ * This class is used for simple edge detection in coloured images
+ * you can tweak the final output in multiple ways and 
+ * add and improve functionality easily
+ *
+ * @author George Tsianakas
+ * @versian 0.1
+ */
+
 import static java.lang.Math.abs;
 
 public class EdgeDetection{
@@ -9,18 +19,34 @@ public class EdgeDetection{
     }
 
     public boolean[][] detectEdges(int edgeDetValue){
-	int[][] data = this.getGrayScale();
+	int[][] data = this.smoothFilter();
 	boolean[][] edge = new boolean[image.getWidth()][image.getHeight()];
-	//start with one because we compare with previous
-	    //this compares horizontally
 
+	//detect edges based on edgeDetValue
 	for (int x = 0; x < image.getWidth()-1; x++){
 	    for (int y = 0; y < image.getHeight()-1; y++){
 		if (abs(data[x][y] - data[x+1][y]) >= edgeDetValue ||
 		    abs(data[x][y] - data[x][y+1]) >= edgeDetValue ||
 		    abs(data[x][y] - data[x+1][y+1]) >= edgeDetValue){
-	
+		    		    
 		    edge[x][y] = true;
+		}
+	    }
+	}
+
+	//if its sourounded by edges its not an edge attempt to reduce noise
+	for (int x = 1; x < image.getWidth()-1; x++){
+	    for (int y = 1; y < image.getHeight()-1; y++){
+		if (edge[x][y]){
+		    if (edge[x-1][y-1] &&
+			edge[x-1][y] &&
+			edge[x][y-1] &&
+			edge[x+1][y+1] &&
+			edge[x+1][y] &&
+			edge[x][y+1] ){
+			
+			edge[x][y] = false;
+		    }
 		}
 	    }
 	}
@@ -33,9 +59,9 @@ public class EdgeDetection{
 	int[][] value = new int[image.getWidth()][image.getHeight()];
 	for (int row = 0; row < image.getWidth(); row++){
 	    for (int col = 0; col < image.getHeight(); col++){
-		//you can tweak this values for better results //maybe use doubles and exact multiplication. better result but slower.
+		//you can tweak this values for better results 
+		//maybe use doubles and exact multiplication. better result but slower.
 		//value[row][col] = (image.getRed(row,col) >> 2) + (image.getGreen(row,col) >> 1) + (image.getBlue(row,col) >> 2);
-
 		value[row][col] = (int) ( (image.getRed(row,col) * 0.3) + (image.getGreen(row,col) *0.5) + (image.getBlue(row,col) *0.11) /3);
 	    }
 	}
@@ -46,10 +72,28 @@ public class EdgeDetection{
 	return image;
     }
 
+    //works good on images with smooth transitions
+    public int[][] smoothFilter(){
+	
+	int[][] smooth = this.getGrayScale();
+	
+	//averages a pixel with the average of its neighbours
+	for (int x = 1; x < image.getWidth()-1; x++){
+	    for (int y = 1; y < image.getHeight()-1; y++){
+		int A = (int) (smooth[x-1][y-1]+smooth[x-1][y]+smooth[x][y-1]+smooth[x+1][y+1]+
+			       smooth[x+1][y]+smooth[x][y-1]+smooth[x-1][y+1]+smooth[x+1][y-1]) / 8;
+		smooth[x][y] = (int) (A + smooth[x][y])/2;
+	    }
+	}
+	
+	return smooth;
+    }
+
 
     public void saveImageWithEdge(String filename,String type,int edgeThresh){
 	boolean edge[][] = this.detectEdges(edgeThresh);
 	
+	//creates the edge image using the boolean values of edge
 	for (int x = 0; x < image.getWidth(); x++){
 	    for (int y = 0; y < image.getHeight(); y++){
 		if (edge[x][y]){
@@ -60,22 +104,31 @@ public class EdgeDetection{
 	    }
 	}
 	image.saveImage(filename,type);
+    }
+    public void printHistogram(){
+	
+	//Image img = image.createImage(256,2000,fileName,type);
+	int counter[] = new int[256];
+	int[][] gray = this.getGrayScale();
+
+	//get frequency data
+	for (int x = 0; x < image.getWidth(); x++){
+	    for (int y = 0; y < image.getHeight(); y++){
+		counter[gray[x][y]]++;
+	    }
+	}
+	
+	//display
+	for (int i = 0; i < counter.length; i++){
+	    System.out.println(i +": " + counter[i]);
+	}
 
     }
 
     public static void main(String[] args){
-	EdgeDetection img = new EdgeDetection("test.jpg");
-
-	img.saveImageWithEdge("subEdge2","png",10);
-
-	//boolean[][] edge = img.detectEdges(2);
-
-	//for (int row = 0; row < img.getImage().getWidth(); row++){
-	//  for (int col = 0; col < img.getImage().getHeight(); col++){
-	//	System.out.println(edge[row][col]);
-	//  }
-	//}
-
+	EdgeDetection img = new EdgeDetection("baby.jpg");
+	img.printHistogram();
+	img.saveImageWithEdge("babymooth10","png",10);
     }
 
 

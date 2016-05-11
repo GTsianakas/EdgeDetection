@@ -1,3 +1,12 @@
+/**
+ * Image
+ * This class acts as a wrapper for BufferedImage with built in methods for 
+ * easier image manipulation 
+ *
+ * @author George Tsianakas
+ * @versian 0.1
+ */
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -44,7 +53,7 @@ public class Image{
 	}
 	return values;
     }
-    
+
     public int getHeight(){
 	return image.getHeight();
     }
