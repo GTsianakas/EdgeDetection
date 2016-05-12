@@ -45,7 +45,7 @@ public class EdgeDetection{
 	    }
 	}
 
-	//if its sourounded by edges its not an edge attempt to reduce noise
+/*	//if its sourounded by edges its not an edge attempt to reduce noise
 	for (int x = 1; x < image.getWidth()-1; x++){
 	    for (int y = 1; y < image.getHeight()-1; y++){
 		if (edge[x][y]){
@@ -60,7 +60,7 @@ public class EdgeDetection{
 		    }
 		}
 	    }
-	}
+	    }*/
 	
 	return edge;
     }
@@ -138,10 +138,11 @@ public class EdgeDetection{
     }
 
     /**
-     * Prints the Histogram of the image on console can be used to determine if the grayscale is balanced
+     * Returns the Histogram of the image on console can be used to determine if the grayscale is balanced
+     * @return int[] grayscale histogram array
      */
 
-    public void printHistogram(){
+    public int[] getHistogram(){
 	
 	//Image img = image.createImage(256,2000,fileName,type);
 	int counter[] = new int[256];
@@ -153,21 +154,16 @@ public class EdgeDetection{
 		counter[gray[x][y]]++;
 	    }
 	}
-	
-	//display
-	for (int i = 0; i < counter.length; i++){
-	    System.out.println(i +": " + counter[i]);
-	}
-
+	return counter;
     }
 
     //testing
     public static void main(String[] args){
-	/*
-	EdgeDetection img = new EdgeDetection("test.jpg");
-	img.printHistogram();
-	img.saveImageWithEdge("testsmooth10B","png",10);
-	*/
+	
+	EdgeDetection img = new EdgeDetection("amon.jpg");
+	//img.printHistogram();
+	img.saveImageWithEdge("amon8no","png",8);
+	
     }
 
 
